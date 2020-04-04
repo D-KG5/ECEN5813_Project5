@@ -50,6 +50,7 @@ typedef enum func_names_t{
 	EMPTY_NAME
 } func_names_t;
 
+char * Log_timestamp(void); // return formatted timestamp for logging
 void Log_enable(void); // begin printing log messages when called
 void Log_disable(void); // ignore any log messages until re-enabled
 void Log_level(log_level_t level);	// set logging level

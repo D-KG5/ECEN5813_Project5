@@ -66,7 +66,11 @@ int main(void) {
   	/* Init FSL debug console. */
     BOARD_InitDebugConsole();
 
+    // enable peripherals
+    SysTick_init();
+
     // enable logging
+
     Log_enable();
 #ifdef TESTING_MODE
     Log_level(LOG_TEST);
@@ -79,15 +83,15 @@ int main(void) {
     LED_init();
 #if UART_POLL
     //
-#else if UART_INT
+#else// if UART_INT
     //
 #endif
 
-    PRINTF("Hello World\n");
+//    PRINTF("Hello World\n");
 
 #if ECHO_MODE
     //
-#else if APP_MODE
+#else// if APP_MODE
     //
 #endif
 
@@ -99,6 +103,8 @@ int main(void) {
         /* 'Dummy' NOP to allow source level single stepping of
             tight while() loop */
         __asm volatile ("nop");
+        Delay(8000000);
+        Log_string("testing\r\n", MAIN, LOG_STATUS);
     }
     return 0 ;
 }

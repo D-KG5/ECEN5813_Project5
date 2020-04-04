@@ -16,6 +16,7 @@
 
 // initialize RGB LEDs
 void LED_init(void){
+	START_CRITICAL();
     // https://github.com/alexander-g-dean/ESF/blob/master/Code/Chapter_2/Source/main.c
 	// start clock for PORT B and PORT D
 	SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTD_MASK;
@@ -34,6 +35,7 @@ void LED_init(void){
 	// clear ports
 	PTB->PCOR |= MASK(RED_LED_SHIFT) | MASK(GREEN_LED_SHIFT);
 	PTD->PCOR |= MASK(BLUE_LED_SHIFT);
+	END_CRITICAL();
 	Log_string("LED Initialized\r\n", LED_INIT, LOG_DEBUG);
 }
 

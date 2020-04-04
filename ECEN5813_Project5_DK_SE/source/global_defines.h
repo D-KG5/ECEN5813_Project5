@@ -9,8 +9,13 @@
 #define GLOBAL_DEFINES_H_
 
 #include "fsl_debug_console.h"
+#include "MKL25Z4.h"
 #include "uCUnit/uCUnit.h"
 #include "logger.h"
+
+// critical section macro functions
+#define START_CRITICAL()	__disable_irq()
+#define END_CRITICAL()	__enable_irq()
 
 // macros to enable/disable logging, testing
 #define LOGGING_MODE
@@ -44,13 +49,5 @@
 
 // simple delay function
 void Delay(volatile uint32_t number);
-
-// enum for state machines
-typedef enum sm_num_t{
-	STATE_MACHINE_STATE,
-	STATE_MACHINE_TABLE,
-	STATE_MACHINE_SPI,
-	STATE_MACHINE_NONE
-} sm_num_t;
 
 #endif /* GLOBAL_DEFINES_H_ */

@@ -9,7 +9,10 @@
 #define LOGGING_C_
 
 #include "logger.h"
+#include "timer.h"
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include "fsl_debug_console.h"
 #include "global_defines.h"
@@ -30,11 +33,28 @@ static const char* func_names[] = {"main:", "POST:", "Log_enable:", "Log_level:"
 
 static bool enabled = false;
 
+extern uint8_t timestamp_counter_n;
+extern uint8_t timestamp_counter_s;
+extern uint8_t timestamp_counter_m;
+extern uint8_t timestamp_counter_h;
+char * timestamp;
+
+// function to format timestamp counter vars into timestamp string
+// returns formatted timestamp string HH:MM:SS.n
+char * Log_timestamp(void){
+	START_CRITICAL();
+	snprintf(timestamp, 11, "%02d:%02d:%02d.%d", timestamp_counter_h, timestamp_counter_m, timestamp_counter_s, timestamp_counter_n);
+	END_CRITICAL();
+	return timestamp;
+}
+
 // enable logging
 void Log_enable(void){
 #if LOGGING
 	// begin printing log messages when called
 	enabled = true;
+	// malloc timestamp string
+	timestamp = malloc(sizeof(char) * 11);
 #endif
 }
 
@@ -108,7 +128,7 @@ int Log_string(char * string, func_names_t func, log_level_t level){
 #if LOGGING
 	if(enabled){
 		if(log_level >= level){
-			int ret = PRINTF("%s %s %s", log_levels[level], func_names[func], string);
+			int ret = PRINTF("%s: %s %s %s", Log_timestamp(), log_levels[level], func_names[func], string);
 			if(ret >= 0){
 				log_status = LOG_SUCCESS;
 			}
@@ -124,7 +144,7 @@ int Log_integer(int32_t integer, func_names_t func, log_level_t level){
 #if LOGGING
 	if(enabled){
 		if(log_level >= level){
-			int ret = PRINTF("%s %s %d\r\n", log_levels[level], func_names[func], integer);
+			int ret = PRINTF("%s: %s %s %d\r\n", Log_timestamp(), log_levels[level], func_names[func], integer);
 			if(ret >= 0){
 				log_status = LOG_SUCCESS;
 			}
