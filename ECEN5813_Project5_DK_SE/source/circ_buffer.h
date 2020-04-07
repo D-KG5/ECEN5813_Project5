@@ -10,4 +10,32 @@
 
 #include <stdint.h>
 
+typedef enum buf_status_t{
+	BUF_SUCCESS,	// no error
+	BUF_FAILED	// failure case
+} buf_status_t;
+
+typedef struct{
+	char *buffer;
+	int head;
+	int tail;
+	int length;
+} circ_buf_t;
+
+// add item
+int insert_item(circ_buf_t *buf, char data);
+// remove oldest item
+int remove_item(circ_buf_t *buf, char *data);
+// check buffer full
+bool is_full(circ_buf_t *buf);
+// check buffer empty
+bool is_empty(circ_buf_t *buf);
+// check buffer init
+bool check_buf(void);
+// check buffer pointer valid
+bool check_buf_ptr(circ_buf_t *buf);
+// buffer init
+circ_buf_t *init_buf(int length);
+// buffer destroy
+int destroy_buf(circ_buf_t *buf);
 #endif /* CIRC_BUFFER_H_ */

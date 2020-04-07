@@ -33,6 +33,7 @@
  * @brief   Application entry point.
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -70,7 +71,6 @@ int main(void) {
     SysTick_init();
 
     // enable logging
-
     Log_enable();
 #ifdef TESTING_MODE
     Log_level(LOG_TEST);
@@ -81,6 +81,7 @@ int main(void) {
 
     // enable peripherals
     LED_init();
+    LED_off(ALL);
 #if UART_POLL
     //
 #else// if UART_INT
@@ -94,6 +95,19 @@ int main(void) {
 #else// if APP_MODE
     //
 #endif
+    circ_buf_t * buffer;
+    int len = 10;
+    char *foo = malloc(len * sizeof(char));
+    buffer = init_buf(len);
+    insert_item(buffer, 'A');
+    insert_item(buffer, 'B');
+    insert_item(buffer, 'C');
+    remove_item(buffer, foo);
+    PRINTF("foo is %c\r\n", *foo);
+	remove_item(buffer, foo);
+	PRINTF("foo is %c\r\n", *foo);
+	remove_item(buffer, foo);
+	PRINTF("foo is %c\r\n", *foo);
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
@@ -103,8 +117,8 @@ int main(void) {
         /* 'Dummy' NOP to allow source level single stepping of
             tight while() loop */
         __asm volatile ("nop");
-        Delay(8000000);
-        Log_string("testing\r\n", MAIN, LOG_STATUS);
+//        Delay(8000000);
+//        Log_string("testing\r\n", MAIN, LOG_STATUS);
     }
     return 0 ;
 }
