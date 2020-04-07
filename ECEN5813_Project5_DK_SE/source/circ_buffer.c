@@ -40,6 +40,7 @@ int remove_item(circ_buf_t *buf, uint8_t *data){
 }
 
 // check buffer full
+inline
 bool is_full(circ_buf_t *buf){
 	if(((buf->tail + 1) % buf->length) == buf->head){
 		return true;
@@ -47,7 +48,9 @@ bool is_full(circ_buf_t *buf){
 		return false;
 	}
 }
+
 // check buffer empty
+inline
 bool is_empty(circ_buf_t *buf){
 	if(buf->head == buf->tail){
 		return true;
@@ -56,6 +59,7 @@ bool is_empty(circ_buf_t *buf){
 	}
 }
 // check buffer init
+inline
 bool check_buf(void){
 	if(buf_status == BUF_SUCCESS){
 		return true;
@@ -64,6 +68,7 @@ bool check_buf(void){
 	}
 }
 // check buffer pointer valid
+inline
 bool check_buf_ptr(circ_buf_t *buf){
 	if(buf != NULL){
 		return true;
@@ -81,11 +86,10 @@ circ_buf_t *init_buf(int length){
 		return NULL;
 	}
 	newBufPtr->length = length;
-	uint8_t *buf_arr = malloc(length * sizeof(uint8_t));
+	// set up buffer of size length
+	uint8_t buf_arr[length];
 	newBufPtr->buffer = buf_arr;
-	for(int i = 0; i < newBufPtr->length; i++){
-		newBufPtr->buffer[i] = '0';
-	}
+	// set up head and tail
 	newBufPtr->head = 0;
 	newBufPtr->tail = 0;
 	buf_status = BUF_SUCCESS;
@@ -95,7 +99,6 @@ circ_buf_t *init_buf(int length){
 // buffer destroy
 int destroy_buf(circ_buf_t *buf){
 	if(buf != NULL){
-		free(buf->buffer);
 		free(buf);
 		buf = NULL;
 	}
