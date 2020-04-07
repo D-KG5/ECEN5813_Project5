@@ -97,7 +97,7 @@ int main(void) {
 #endif
     circ_buf_t * buffer;
     int len = 10;
-    char *foo = malloc(len * sizeof(char));
+    uint8_t *foo = malloc(len * sizeof(uint8_t));
     buffer = init_buf(len);
     insert_item(buffer, 'A');
     insert_item(buffer, 'B');
@@ -108,6 +108,7 @@ int main(void) {
 	PRINTF("foo is %c\r\n", *foo);
 	remove_item(buffer, foo);
 	PRINTF("foo is %c\r\n", *foo);
+	destroy_buf(buffer);
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;

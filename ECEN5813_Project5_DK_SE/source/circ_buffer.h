@@ -16,16 +16,16 @@ typedef enum buf_status_t{
 } buf_status_t;
 
 typedef struct{
-	char *buffer;
+	uint8_t *buffer;
 	int head;
 	int tail;
 	int length;
 } circ_buf_t;
 
 // add item
-int insert_item(circ_buf_t *buf, char data);
+int insert_item(circ_buf_t *buf, uint8_t data);
 // remove oldest item
-int remove_item(circ_buf_t *buf, char *data);
+int remove_item(circ_buf_t *buf, uint8_t *data);
 // check buffer full
 bool is_full(circ_buf_t *buf);
 // check buffer empty

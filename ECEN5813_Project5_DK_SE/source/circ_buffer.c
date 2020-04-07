@@ -17,7 +17,7 @@
 buf_status_t buf_status;
 
 // add item
-int insert_item(circ_buf_t *buf, char data){
+int insert_item(circ_buf_t *buf, uint8_t data){
 	// check if not full
 	if(((buf->tail + 1) % buf->length) == buf->head){
 		return -1;
@@ -28,14 +28,14 @@ int insert_item(circ_buf_t *buf, char data){
 }
 
 // remove oldest item
-int remove_item(circ_buf_t *buf, char *data){
+int remove_item(circ_buf_t *buf, uint8_t *data){
 	// check if not empty
 	if(buf->head == buf->tail){
 		return -1;
 	}
 	*data = buf->buffer[buf->head];
 	buf->head = (buf->head + 1) % buf->length;
-	PRINTF("Removed %c\r\n", *data);
+//	PRINTF("Removed %c\r\n", *data);
 	return 0;
 }
 
@@ -81,7 +81,7 @@ circ_buf_t *init_buf(int length){
 		return NULL;
 	}
 	newBufPtr->length = length;
-	char *buf_arr = malloc(length * sizeof(char));
+	uint8_t *buf_arr = malloc(length * sizeof(uint8_t));
 	newBufPtr->buffer = buf_arr;
 	for(int i = 0; i < newBufPtr->length; i++){
 		newBufPtr->buffer[i] = '0';
