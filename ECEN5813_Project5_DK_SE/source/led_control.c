@@ -16,6 +16,8 @@
 
 // initialize RGB LEDs
 void LED_init(void){
+	uint32_t masking_state;
+	masking_state = __get_PRIMASK();
 	START_CRITICAL();
     // https://github.com/alexander-g-dean/ESF/blob/master/Code/Chapter_2/Source/main.c
 	// start clock for PORT B and PORT D
@@ -35,7 +37,12 @@ void LED_init(void){
 	// clear ports
 	PTB->PCOR |= MASK(RED_LED_SHIFT) | MASK(GREEN_LED_SHIFT);
 	PTD->PCOR |= MASK(BLUE_LED_SHIFT);
-	END_CRITICAL();
+
+	// turn off LED
+	PTB->PSOR = MASK(RED_LED_SHIFT);
+	PTB->PSOR = MASK(GREEN_LED_SHIFT);
+	PTD->PSOR = MASK(BLUE_LED_SHIFT);
+	END_CRITICAL(masking_state);
 	Log_string("LED Initialized\r\n", LED_INIT, LOG_DEBUG);
 }
 

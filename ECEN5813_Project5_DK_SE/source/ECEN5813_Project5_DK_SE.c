@@ -84,7 +84,6 @@ int main(void) {
 
     // enable peripherals
     LED_init();
-    LED_off(ALL);
 #if UART_POLL
     //
 #else// if UART_INT
@@ -111,8 +110,8 @@ int main(void) {
         /* 'Dummy' NOP to allow source level single stepping of
             tight while() loop */
         __asm volatile ("nop");
-//        Delay(8000000);
-//        Log_string("testing\r\n", MAIN, LOG_STATUS);
+        Delay(8000000);
+        Log_string("testing\r\n", MAIN, LOG_STATUS);
     }
     return 0 ;
 }

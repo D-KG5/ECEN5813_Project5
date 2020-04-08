@@ -14,11 +14,11 @@
 
 // critical section macro functions
 #define START_CRITICAL()	__disable_irq()
-#define END_CRITICAL()	__enable_irq()
+#define END_CRITICAL(x)	__set_PRIMASK(x)
 
 // macros to enable/disable logging, testing
 #define LOGGING_MODE
-#define TESTING_MODE
+//#define TESTING_MODE
 
 #ifdef TESTING_MODE
 #include "uCUnit/uCUnit.h"

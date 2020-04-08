@@ -19,7 +19,7 @@ void buf_create_test(void);
 void buf_overfill_test(void);
 void buf_overempty_test(void);
 void buf_data_access_test(void);
-
+#ifdef TESTING_MODE
 void run_tests(void){
 	// run tests
 	buf_create_test();
@@ -237,3 +237,4 @@ void buf_data_access_test(void){
 	free(foo);
 	UCUNIT_TestcaseEnd();
 }
+#endif

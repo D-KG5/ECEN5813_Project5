@@ -42,9 +42,11 @@ char * timestamp;
 // function to format timestamp counter vars into timestamp string
 // returns formatted timestamp string HH:MM:SS.n
 char * Log_timestamp(void){
+	uint32_t masking_state;
+	masking_state = __get_PRIMASK();
 	START_CRITICAL();
 	snprintf(timestamp, 11, "%02d:%02d:%02d.%d", timestamp_counter_h, timestamp_counter_m, timestamp_counter_s, timestamp_counter_n);
-	END_CRITICAL();
+	END_CRITICAL(masking_state);
 	return timestamp;
 }
 

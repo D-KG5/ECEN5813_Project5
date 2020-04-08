@@ -41,6 +41,8 @@ void SysTick_disable(void){
 
 // systick interrupt handler to increment timestamp counter vars in a critical section
 void SysTick_Handler(){
+	uint32_t masking_state;
+	masking_state = __get_PRIMASK();
 	START_CRITICAL();
 	timestamp_counter_n++;
 	if(timestamp_counter_n == 10){
@@ -55,6 +57,6 @@ void SysTick_Handler(){
 		timestamp_counter_m = 0;
 		timestamp_counter_h++;
 	}
-    END_CRITICAL();
+    END_CRITICAL(masking_state);
 }
 
