@@ -14,7 +14,6 @@
 #include "MKL25Z4.h"
 #include "circ_buffer.h"
 
-buf_status_t buf_status;
 
 // add item
 int insert_item(circ_buf_t *buf, uint8_t data){
@@ -60,8 +59,8 @@ bool is_empty(circ_buf_t *buf){
 }
 // check buffer init
 inline
-bool check_buf(void){
-	if(buf_status == BUF_SUCCESS){
+bool check_buf(circ_buf_t *buf){
+	if(buf->buf_status == BUF_INIT){
 		return true;
 	}else{
 		return false;
@@ -82,7 +81,7 @@ circ_buf_t *init_buf(int length){
 	circ_buf_t * newBufPtr = malloc(sizeof(newBuf));
 	if(!check_buf_ptr(newBufPtr)){
 		PRINTF("Failed to init buffer\r\n");
-		buf_status = BUF_FAILED;
+//		newBufPtr->buf_status = BUF_FAILED;
 		return NULL;
 	}
 	newBufPtr->length = length;
@@ -92,13 +91,14 @@ circ_buf_t *init_buf(int length){
 	// set up head and tail
 	newBufPtr->head = 0;
 	newBufPtr->tail = 0;
-	buf_status = BUF_SUCCESS;
+	newBufPtr->buf_status = BUF_INIT;
 	PRINTF("Init buffer success\r\n");
 	return newBufPtr;
 }
 // buffer destroy
 int destroy_buf(circ_buf_t *buf){
 	if(buf != NULL){
+		buf->buf_status = BUF_NOTINIT;
 		free(buf);
 		buf = NULL;
 	}

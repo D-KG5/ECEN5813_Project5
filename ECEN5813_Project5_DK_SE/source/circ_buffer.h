@@ -12,7 +12,9 @@
 
 typedef enum buf_status_t{
 	BUF_SUCCESS,	// no error
-	BUF_FAILED	// failure case
+	BUF_FAILED,	// failure case
+	BUF_INIT,
+	BUF_NOTINIT
 } buf_status_t;
 
 typedef struct{
@@ -20,6 +22,7 @@ typedef struct{
 	int head;
 	int tail;
 	int length;
+	buf_status_t buf_status;
 } circ_buf_t;
 
 // add item
@@ -31,7 +34,7 @@ bool is_full(circ_buf_t *buf);
 // check buffer empty
 bool is_empty(circ_buf_t *buf);
 // check buffer init
-bool check_buf(void);
+bool check_buf(circ_buf_t *buf);
 // check buffer pointer valid
 bool check_buf_ptr(circ_buf_t *buf);
 // buffer init

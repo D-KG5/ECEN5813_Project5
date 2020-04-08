@@ -10,7 +10,6 @@
 
 #include "fsl_debug_console.h"
 #include "MKL25Z4.h"
-#include "uCUnit/uCUnit.h"
 #include "logger.h"
 
 // critical section macro functions
@@ -19,7 +18,11 @@
 
 // macros to enable/disable logging, testing
 #define LOGGING_MODE
-//#define TESTING_MODE
+#define TESTING_MODE
+
+#ifdef TESTING_MODE
+#include "uCUnit/uCUnit.h"
+#endif
 
 #define UART_POLL (1)
 #define UART_INT (1)

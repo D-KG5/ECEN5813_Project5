@@ -50,6 +50,9 @@
 #include "logger.h"
 
 #include "circ_buffer.h"
+#ifdef TESTING_MODE
+#include "circ_buf_test.h"
+#endif
 #include "uart_poll.h"
 #include "uart_interrupt.h"
 
@@ -88,27 +91,17 @@ int main(void) {
     //
 #endif
 
-//    PRINTF("Hello World\n");
+#ifdef TESTING_MODE
+    // run circular buffer tests
+    run_tests();
+    LED_flash(BLUE, 2);
+#endif
 
 #if ECHO_MODE
     //
 #else// if APP_MODE
     //
 #endif
-    circ_buf_t * buffer;
-    int len = 10;
-    uint8_t *foo = malloc(len * sizeof(uint8_t));
-    buffer = init_buf(len);
-    insert_item(buffer, 'A');
-    insert_item(buffer, 'B');
-    insert_item(buffer, 'C');
-    remove_item(buffer, foo);
-    PRINTF("foo is %c\r\n", *foo);
-	remove_item(buffer, foo);
-	PRINTF("foo is %c\r\n", *foo);
-	remove_item(buffer, foo);
-	PRINTF("foo is %c\r\n", *foo);
-	destroy_buf(buffer);
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
