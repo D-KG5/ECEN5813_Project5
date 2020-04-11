@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "global_defines.h"
+#include "led_control.h"
 #include "circ_buffer.h"
 
 void buf_destroy_test(void);
@@ -30,6 +31,7 @@ void run_tests(void){
 	buf_overfill_test();
 	buf_overempty_test();
 
+	LED_flash(BLUE, 2);
     UCUNIT_WriteSummary();
     UCUNIT_Shutdown();
 }
@@ -39,7 +41,6 @@ void buf_destroy_test(void){
 //    destroy buffer
     circ_buf_t * buffer1;
     int len = 9;
-    uint8_t *foo = malloc((len + 1) * sizeof(uint8_t));
 
     buffer1 = init_buf((len + 1));
     UCUNIT_CheckIsEqual(true, check_buf(buffer1));
@@ -58,15 +59,14 @@ void buf_destroy_test(void){
 
     // true
     UCUNIT_CheckIsEqual(true, is_full(buffer1));
-    remove_item(buffer1, foo);
-    remove_item(buffer1, foo);
-    remove_item(buffer1, foo);
-    remove_item(buffer1, foo);
+    remove_item(buffer1);
+    remove_item(buffer1);
+    remove_item(buffer1);
+    remove_item(buffer1);
 
     destroy_buf(buffer1);
     // true
     UCUNIT_CheckIsEqual(true, check_buf_ptr(buffer1));
-    free(foo);
     UCUNIT_TestcaseEnd();
 }
 
@@ -168,7 +168,7 @@ void buf_overempty_test(void){
     circ_buf_t * buffer6;
     int len = 9;
     int ret = 0;
-    uint8_t *foo = malloc((len + 1) * sizeof(uint8_t));
+    uint8_t foo = 0;
 
     buffer6 = init_buf((len + 1));
     UCUNIT_CheckIsEqual(true, check_buf(buffer6));
@@ -188,20 +188,19 @@ void buf_overempty_test(void){
 
     //true
     UCUNIT_CheckIsEqual(true, is_full(buffer6));
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    ret = remove_item(buffer6, foo);
-    UCUNIT_CheckIsEqual(-1, ret);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);
+    foo = remove_item(buffer6);	// returns -1 (255)
+    UCUNIT_CheckIsEqual(255, foo);
 
     destroy_buf(buffer6);
-    free(foo);
     UCUNIT_TestcaseEnd();
 }
 
@@ -211,7 +210,7 @@ void buf_data_access_test(void){
     circ_buf_t * buffer7;
     int len = 9;
     int ret = 0;
-    uint8_t *foo = malloc((len + 1) * sizeof(uint8_t));
+    uint8_t foo = 0;
 
     buffer7 = init_buf((len + 1));
     UCUNIT_CheckIsEqual(true, check_buf(buffer7));
@@ -225,16 +224,14 @@ void buf_data_access_test(void){
     ret = insert_item(buffer7, 'F'); // 6
     UCUNIT_CheckIsEqual(0, ret);
 
-    ret = remove_item(buffer7, foo);
-    UCUNIT_CheckIsEqual('A', *foo);
-    ret = remove_item(buffer7, foo);
-    UCUNIT_CheckIsEqual('B', *foo);
-	ret = remove_item(buffer7, foo);
-	UCUNIT_CheckIsEqual('C', *foo);
+    foo = remove_item(buffer7);
+    UCUNIT_CheckIsEqual('A', foo);
+    foo = remove_item(buffer7);
+    UCUNIT_CheckIsEqual('B', foo);
+    foo = remove_item(buffer7);
+	UCUNIT_CheckIsEqual('C', foo);
 
-	UCUNIT_CheckIsEqual(0, ret);
 	destroy_buf(buffer7);
-	free(foo);
 	UCUNIT_TestcaseEnd();
 }
 #endif

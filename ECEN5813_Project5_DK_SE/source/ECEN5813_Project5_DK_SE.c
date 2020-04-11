@@ -93,7 +93,6 @@ int main(void) {
 #ifdef TESTING_MODE
     // run circular buffer tests
     run_tests();
-    LED_flash(BLUE, 2);
 #endif
 
 #if ECHO_MODE

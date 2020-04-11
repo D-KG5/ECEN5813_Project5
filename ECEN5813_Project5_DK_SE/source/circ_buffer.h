@@ -22,13 +22,14 @@ typedef struct{
 	int head;
 	int tail;
 	int length;
+	int size;
 	buf_status_t buf_status;
 } circ_buf_t;
 
 // add item
 int insert_item(circ_buf_t *buf, uint8_t data);
 // remove oldest item
-int remove_item(circ_buf_t *buf, uint8_t *data);
+int remove_item(circ_buf_t *buf);
 // check buffer full
 bool is_full(circ_buf_t *buf);
 // check buffer empty
