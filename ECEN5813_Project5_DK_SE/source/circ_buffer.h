@@ -12,7 +12,7 @@
 
 typedef enum buf_status_t{
 	BUF_SUCCESS,	// no error
-	BUF_FAILED,	// failure case
+	BUF_FAILED,		// failure case
 	BUF_INIT,
 	BUF_NOTINIT
 } buf_status_t;
@@ -21,11 +21,13 @@ typedef struct{
 	uint8_t *buffer;
 	int head;
 	int tail;
-	int length;
-	int size;
+	int length;	// total length of buffer
+	int size;	// current size of buffer
 	buf_status_t buf_status;
 } circ_buf_t;
 
+// extend buffer if its full
+bool extend_buf(circ_buf_t *buf);
 // add item
 int insert_item(circ_buf_t *buf, uint8_t data);
 // remove oldest item
