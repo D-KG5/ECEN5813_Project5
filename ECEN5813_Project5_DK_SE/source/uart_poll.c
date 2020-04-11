@@ -1,33 +1,27 @@
 /*
  * uart_poll.c
  *
- *  Created on: Mar 31, 2020
- *      Author: Dhruva
+ *  Created on: Apr 9, 2020
+ *      Author: sagar
  */
-
 #include <stdio.h>
-#include <stdint.h>
-#include "global_defines.h"
-#include "logger.h"
-#include "led_control.h"
+#include "board.h"
+#include "peripherals.h"
+#include "pin_mux.h"
+#include "clock_config.h"
 #include "MKL25Z4.h"
-#include "circ_buffer.h"
+#include "fsl_debug_console.h"
 #include "uart_poll.h"
 
-char inputchar;
+//in main
+
+ //   Init_UART0(115200);
+
+ //   echofunc();
+ //  appfunc();
 
 
-//in main function
-
-
-//Init_UART0(115200);
-
-//echofunc();
-
-//
-
-
-
+//Function for UART hardware initialization including baud rate and serial message format
 void Init_UART0(uint32_t baud_rate) {
 	uint16_t sbr;
 	uint8_t temp;
@@ -48,7 +42,7 @@ void Init_UART0(uint32_t baud_rate) {
 	PORTA->PCR[2] = PORT_PCR_ISF_MASK | PORT_PCR_MUX(2); // Tx
 
 	// Set baud rate and oversampling ratio
-	sbr = (uint16_t)((SYS_CLOCK)/(baud_rate * UART_OVERSAMPLE_RATE));
+	sbr = (uint16_t)((BUS_CLOCK)/(baud_rate * UART_OVERSAMPLE_RATE));
 	UART0->BDH &= ~UART0_BDH_SBR_MASK;
 	UART0->BDH |= UART0_BDH_SBR(sbr>>8);
 	UART0->BDL = UART0_BDL_SBR(sbr);
@@ -88,18 +82,34 @@ void Init_UART0(uint32_t baud_rate) {
 
 }
 
+//Function to transmit a character assuming transmitter is available
 
+uint8_t Transmit_char(uint8_t data)
+{
+	UART0->D = data;
+	return 1; // Transmit success
+}
+
+
+//Function waits for the transmitter to be available and then once available transmit a character and return
 void UART0_Transmit_Poll(uint8_t data) {
 		while (!(UART0->S1 & UART0_S1_TDRE_MASK))
 			;
-		UART0->D = data;
-		printf("%d",data);
+		Transmit_char(data);
+	//	printf("%d\n\r",data);
 }
 
+//Function to receive the character assuming receiver has data
+uint8_t Receive_char(void)
+{
+	return UART0->D;
+}
+
+//Function to wait  for the receiver to receive a new character and then return that character
 uint8_t UART0_Receive_Poll(void) {
 		while (!(UART0->S1 & UART0_S1_RDRF_MASK))
 			;
-		return UART0->D;
+		return Receive_char();
 }
 
 void Send_String_Poll(uint8_t * str) {
@@ -109,6 +119,7 @@ void Send_String_Poll(uint8_t * str) {
 	}
 }
 
+//Function to check whether the transmitter is available to accept a new character for transmission
 uint8_t transmit_check(void)
 {
 	if(UART0->C2 & 0x08)
@@ -125,6 +136,8 @@ uint8_t transmit_check(void)
 
 }
 
+
+//Function to check whether the receiver has a new character to receive
 uint8_t receive_check(void)
 {
 	//UART0->C2 &=~ UART0_C2_TE_MASK;
@@ -144,6 +157,7 @@ uint8_t receive_check(void)
 
 uint8_t echofunc()
 {
+	char inputchar;
 
 	receive_check();
 
@@ -157,3 +171,89 @@ uint8_t echofunc()
 return 1;
 
 }
+
+uint8_t appfunc()
+{
+	char inputchar;
+	int arr[10];
+     int i=0;
+     int j=0;
+     uint32_t arr_[128]={0};
+    //Receives the five character and triggers to printing
+	while(i<5)
+	{
+
+
+	receive_check();
+
+	inputchar=UART0_Receive_Poll();
+
+	arr[i]=inputchar;
+
+
+
+	arr_[arr[i]]+=1;
+
+
+
+    i++;
+
+	}
+
+//Transmit the five characters and prints
+	transmit_check();
+
+	   for(j=0;j<i;j++)
+	    {
+
+	    	UART0_Transmit_Poll(arr[j]);
+	    }
+
+//sorting the array in ASCI order
+	int k;
+	int p;
+	char temp;
+    int Size=5;
+	for (k = 0; k < Size; k++)
+	{
+		for (p = k + 1; p < Size; p++)
+		{
+			if(arr[k] > arr[p])
+			{
+				temp = arr[k];
+				arr[k] = arr[p];
+				arr[p] = temp;
+			}
+
+		}
+	}
+//http://www.crazyforcode.com/write-code-to-remove-duplicates-in-a-sorted-array/
+	int x,y=0;
+	   // Remove the duplicates ...
+	   for (x = 0; x < 5; x++)
+	   {
+	     if (arr[x] != arr[y])
+	     {
+	       y++;
+	       arr[y] = arr[x]; // Move it to the front
+	     }
+	   }
+
+	   // The new array size..
+	   Size = (y + 1);
+
+
+
+//For count of the unique characters that have been received by the UART device driver
+    for(i=0;i<Size;i++)
+    {
+
+	printf("\n\r%c:%d\n\r",arr[i] ,arr_[arr[i]]);
+    }
+
+
+
+
+return 1;
+}
+

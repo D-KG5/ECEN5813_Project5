@@ -1,17 +1,14 @@
 /*
  * uart_poll.h
  *
- *  Created on: Mar 31, 2020
- *      Author: Dhruva
+ *  Created on: Apr 9, 2020
+ *      Author: sagar
  */
 
 #ifndef UART_POLL_H_
 #define UART_POLL_H_
 
 #include <stdint.h>
-
-
-
 #include <MKL25Z4.H>
 
 
@@ -29,6 +26,5 @@ void Send_String_Poll(uint8_t * str);
 uint8_t receive_check(void);
 uint8_t transmit_check(void);
 uint8_t echofunc(void);
-
-
+uint8_t appfunc(void);
 #endif /* UART_POLL_H_ */
