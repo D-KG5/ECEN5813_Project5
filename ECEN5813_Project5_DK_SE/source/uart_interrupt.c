@@ -225,7 +225,7 @@ if(c == '\0') //if no character received then it fails
 
 	Send_String(bp);
 
-
+	printf("You pressed %c\n\r", c);
 return 1;
 }
 
