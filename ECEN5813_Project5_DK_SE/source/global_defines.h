@@ -24,10 +24,10 @@
 #include "uCUnit/uCUnit.h"
 #endif
 
-#define USE_UART_INTERRUPTS (1) // 0 for polled UART communications, 1 for interrupt-driven
+#define USE_UART_INTERRUPTS (0) // 0 for polled UART communications, 1 for interrupt-driven
 
 #define ECHO_MODE (1)	// disable for app mode
-
+#define NUM_CHAR (10)	// number of characters to process in app mode
 
 // enable/disable logging
 #ifdef LOGGING_MODE

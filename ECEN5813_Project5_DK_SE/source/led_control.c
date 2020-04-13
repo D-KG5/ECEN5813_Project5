@@ -43,7 +43,7 @@ void LED_init(void){
 	PTB->PSOR = MASK(GREEN_LED_SHIFT);
 	PTD->PSOR = MASK(BLUE_LED_SHIFT);
 	END_CRITICAL(masking_state);
-	Log_string("LED Initialized\r\n", LED_INIT, LOG_DEBUG);
+	Log_string("LED Initialized\r\n", LED_INIT, LOG_DEBUG, 1);
 }
 
 /**
@@ -55,15 +55,15 @@ void LED_off(uint8_t color){
 	switch(color){
 	case RED:
 		PTB->PSOR = MASK(RED_LED_SHIFT);
-		Log_string("RED OFF\r\n", LED_OFF, LOG_DEBUG);
+		Log_string("RED OFF\r\n", LED_OFF, LOG_DEBUG, 1);
 		break;
 	case GREEN:
 		PTB->PSOR = MASK(GREEN_LED_SHIFT);
-		Log_string("GREEN OFF\r\n", LED_OFF, LOG_DEBUG);
+		Log_string("GREEN OFF\r\n", LED_OFF, LOG_DEBUG, 1);
 		break;
 	case BLUE:
 		PTD->PSOR = MASK(BLUE_LED_SHIFT);
-		Log_string("BLUE OFF\r\n", LED_OFF, LOG_DEBUG);
+		Log_string("BLUE OFF\r\n", LED_OFF, LOG_DEBUG, 1);
 		break;
 	case ALL:
 		PTB->PSOR = MASK(RED_LED_SHIFT);
@@ -72,7 +72,7 @@ void LED_off(uint8_t color){
 //		Log_string("ALL OFF\r\n", LED_OFF, LOG_DEBUG);
 		break;
 	default:
-		Log_string("ERROR: Couldn't turn off LED\r\n", LED_OFF, LOG_STATUS);
+		Log_string("ERROR: Couldn't turn off LED\r\n", LED_OFF, LOG_STATUS, 1);
 		break;
 	}
 }
@@ -89,36 +89,36 @@ void LED_on(uint8_t color){
 		PTB->PCOR = MASK(RED_LED_SHIFT);
 		PTB->PSOR = MASK(GREEN_LED_SHIFT);
 		PTD->PSOR = MASK(BLUE_LED_SHIFT);
-		Log_string("RED ON\r\n", LED_ON, LOG_DEBUG);
+		Log_string("RED ON\r\n", LED_ON, LOG_DEBUG, 1);
 		break;
 	case GREEN:
 		PTB->PSOR = MASK(RED_LED_SHIFT);
 		PTB->PCOR = MASK(GREEN_LED_SHIFT);
 		PTD->PSOR = MASK(BLUE_LED_SHIFT);
-		Log_string("GREEN ON\r\n", LED_ON, LOG_DEBUG);
+		Log_string("GREEN ON\r\n", LED_ON, LOG_DEBUG, 1);
 		break;
 	case BLUE:
 		PTB->PSOR = MASK(RED_LED_SHIFT);
 		PTB->PSOR = MASK(GREEN_LED_SHIFT);
 		PTD->PCOR = MASK(BLUE_LED_SHIFT);
-		Log_string("BLUE ON\r\n", LED_ON, LOG_DEBUG);
+		Log_string("BLUE ON\r\n", LED_ON, LOG_DEBUG, 1);
 		break;
 	case ALL:
 		PTB->PCOR = MASK(RED_LED_SHIFT);
 		PTB->PCOR = MASK(GREEN_LED_SHIFT);
 		PTD->PCOR = MASK(BLUE_LED_SHIFT);
-		Log_string("ALL ON\r\n", LED_ON, LOG_DEBUG);
+		Log_string("ALL ON\r\n", LED_ON, LOG_DEBUG, 1);
 		break;
 	default:
-		Log_string("ERROR: Couldn't turn off LED\r\n", LED_ON, LOG_STATUS);
+		Log_string("ERROR: Couldn't turn off LED\r\n", LED_ON, LOG_STATUS, 1);
 	}
 }
 
 // flash LED num_flashes times
 int LED_flash(uint8_t color, uint8_t num_flashes){
 	int flash = 0;
-	Log_string("Flashing X times: ", LED_FLASH, LOG_DEBUG);
-	Log_integer(num_flashes, EMPTY_NAME, LOG_DEBUG);
+	Log_string("Flashing X times: ", LED_FLASH, LOG_DEBUG, 1);
+	Log_integer(num_flashes, EMPTY_NAME, LOG_DEBUG, 1);
 	for(int i = 0; i < num_flashes; i++){
 		LED_on(color);
 		Delay(1000000);

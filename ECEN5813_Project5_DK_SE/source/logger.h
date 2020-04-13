@@ -56,8 +56,8 @@ void Log_disable(void); // ignore any log messages until re-enabled
 void Log_level(log_level_t level);	// set logging level
 bool Log_status(void); // returns a flag to indicate whether the logger is enabled or disabled
 int Log_data(uint8_t * seq, uint8_t len, func_names_t func, log_level_t level); // display in hexadecimal an address and contents of a memory location, arguments are a pointer to a sequence of bytes and a specified length
-int Log_string(char * string, func_names_t func, log_level_t level); // display a string
-int Log_integer(int32_t integer, func_names_t func, log_level_t level); // display an integer
+int Log_string(char * string, func_names_t func, log_level_t level, uint8_t console); // display a string
+int Log_integer(int32_t integer, func_names_t func, log_level_t level, uint8_t console); // display an integer
 
 // The previous three commands should include a new line after each display
 

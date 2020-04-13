@@ -70,6 +70,9 @@ int main(void) {
   	/* Init FSL debug console. */
     BOARD_InitDebugConsole();
 
+    // enable UART
+    Init_UART0(115200);
+
     // enable peripherals
     SysTick_init();
 
@@ -81,21 +84,19 @@ int main(void) {
 #else
     Log_level(LOG_DEBUG);
 #endif
-
     // enable peripherals
     LED_init();
-    // enable UART
-    Init_UART0(115200);
-
-#if USE_UART_INTERRUPTS==0
-    Send_String_Poll((uint8_t *)"Using Poll\r\n");
-#else// if UART_INT
-    Send_String((uint8_t *)"Using Interrupt\r\n");
-#endif
+    LED_on(BLUE);
 
 #ifdef TESTING_MODE
     // run circular buffer tests
     run_tests();
+#endif
+
+#if USE_UART_INTERRUPTS==0
+    Log_string("Using UART Polling\r\n", MAIN, LOG_STATUS, 0);
+#else// if UART_INT
+    Log_string("Using UART Interrupts\r\n", MAIN, LOG_STATUS, 0);
 #endif
 
 #if ECHO_MODE
@@ -122,13 +123,9 @@ int main(void) {
         /* 'Dummy' NOP to allow source level single stepping of
             tight while() loop */
         __asm volatile ("nop");
+        // Testing of logging to UART after app mode is finished as well as timestamps
         Delay(8000000);
-#if USE_UART_INTERRUPTS==0
-        Send_String_Poll((uint8_t *)"Finished\r\n");
-#else
-        Send_String((uint8_t *)"Finished\r\n");
-#endif
-//        Log_string("testing\r\n", MAIN, LOG_STATUS);
+        Log_string("Finished Application mode\r\n", MAIN, LOG_STATUS, 0);
     }
     return 0 ;
 }

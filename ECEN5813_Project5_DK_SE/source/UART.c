@@ -16,14 +16,13 @@
 #include "circ_buffer.h"
 #include "UART.h"
 
-
+uint32_t masking_state;
 
 static char * report;
 circ_buf_t * TxQ;
 circ_buf_t * RxQ;
 int len = 128;
-static char * report;
-
+static char * character;
 uint8_t c, * bp;
 int frr[10];
 
@@ -89,7 +88,8 @@ void Init_UART0(uint32_t baud_rate) {
 
 	// Clear the UART RDRF flag
 	UART0->S1 &= ~UART0_S1_RDRF_MASK;
-
+	// malloc string for echo function
+	character = malloc(sizeof(char) * 15);
 }
 
 //polling functions
@@ -107,7 +107,7 @@ void UART0_Transmit_Poll(uint8_t data) {
 		while (!(UART0->S1 & UART0_S1_TDRE_MASK))
 			;
 		Transmit_char(data);
-	//	printf("%d\n\r",data);
+		LED_on(GREEN);
 }
 
 //Function to receive the character assuming receiver has data
@@ -120,6 +120,7 @@ uint8_t Receive_char(void)
 uint8_t UART0_Receive_Poll(void) {
 		while (!(UART0->S1 & UART0_S1_RDRF_MASK))
 			;
+		LED_on(BLUE);
 		return Receive_char();
 }
 
@@ -135,13 +136,12 @@ uint8_t transmit_check(void)
 {
 	if(UART0->C2 & 0x08)
 	{
-//		PRINTF("UART ready to transmit\n\r");
+		Log_string("UART ready to transmit\r\n", MAIN, LOG_DEBUG, 1);
 		return 1;
-
 	}
 	else
 	{
-//		PRINTF("UART not ready to transmit\n\r");
+		Log_string("UART not ready to transmit\r\n", MAIN, LOG_DEBUG, 1);
 		return 0;
 	}
 
@@ -154,13 +154,12 @@ uint8_t receive_check(void)
 	//UART0->C2 &=~ UART0_C2_TE_MASK;
 	if(UART0->C2 & 0x04)
 	{
-//		PRINTF("UART ready to receive\n\r");
+		Log_string("UART ready to receive\r\n", MAIN, LOG_DEBUG, 1);
 		return 1;
-
 	}
 	else
 	{
-//		PRINTF("UART not ready to receive\n\r");
+		Log_string("UART not ready to receive\r\n", MAIN, LOG_DEBUG, 1);
 		return 0;
 	}
 
@@ -176,7 +175,6 @@ uint8_t echofunc()
 	UART0_Transmit_Poll(inputchar);
 
 	return 1;
-
 }
 #endif
 
@@ -233,9 +231,9 @@ void Send_String(uint8_t * str) {
 			; // wait for space to open up
 
 		insert_item(TxQ, *str);
-		str++;
+    	str++;
 	}
-
+	LED_on(GREEN);
 	// start transmitter if it isn't already running
 	if (!(UART0->C2 & UART0_C2_TIE_MASK)) {
 		UART0->D = remove_item(TxQ);
@@ -253,8 +251,11 @@ void Receive_String(void)
 	while ((RxQ->size) == 0)
 		; // wait for character to arrive
 
-	c = remove_item(RxQ);//reads the character recevied
-
+	masking_state = __get_PRIMASK();
+	START_CRITICAL();
+	c = remove_item(RxQ);	//reads the character recevied
+	END_CRITICAL(masking_state);
+	LED_on(BLUE);
 	//for application mode
 	// Blocking transmit
 	bp = &c; //adds the character to the bp
@@ -269,26 +270,27 @@ uint8_t echo_function()
 	{
 	//	printf("Receive failed\n\r");
 		Stop_Transmitting; //if failed stop transmitting
+		LED_on(RED);
 		return 0;
 	}
 
 	Send_String(bp);
-
-	printf("You pressed %c\n\r", c);
+	snprintf(character, 15, "You pressed %c\n\r", c);
+	Log_string(character, MAIN, LOG_TEST, 0);
 	return 1;
 }
 #endif
 
 // app mode function for both UART polling or interrupt
+// NUM_CHAR determines number of characters processed before the report is printed
 uint8_t application_mode()
 {
 #if USE_UART_INTERRUPTS
 	int count=0;
 	uint32_t frr_[128]={0};
 	report = malloc(sizeof(char) * 9);
-	uint32_t masking_state;
 
-	while(count<5)
+	while(count<NUM_CHAR)
 	{
 		Receive_String();
 		Send_String(bp);
@@ -302,7 +304,7 @@ uint8_t application_mode()
 	int k;
 	int p;
 	char temp;
-    int Size=5;
+    int Size=NUM_CHAR;
 	for (k = 0; k < Size; k++)
 	{
 		for (p = k + 1; p < Size; p++)
@@ -319,7 +321,7 @@ uint8_t application_mode()
 	//http://www.crazyforcode.com/write-code-to-remove-duplicates-in-a-sorted-array/
 	int x,y=0;
 	   // Remove the duplicates ...
-	   for (x = 0; x < 5; x++)
+	   for (x = 0; x < NUM_CHAR; x++)
 	   {
 	     if (frr[x] != frr[y])
 	     {
@@ -344,13 +346,12 @@ uint8_t application_mode()
 #else
 	char inputchar;
 	report = malloc(sizeof(char) * 9);
-	uint32_t masking_state;
 	int arr[10];
     int i=0;
     int j=0;
     uint32_t arr_[128]={0};
-    //Receives the five character and triggers to printing
-	while(i<5)
+    //Receives the NUM_CHAR characters and triggers to printing
+	while(i<NUM_CHAR)
 	{
 		receive_check();
 		inputchar=UART0_Receive_Poll();
@@ -372,7 +373,7 @@ uint8_t application_mode()
 	int k;
 	int p;
 	char temp;
-    int Size=5;
+    int Size=NUM_CHAR;
 	for (k = 0; k < Size; k++)
 	{
 		for (p = k + 1; p < Size; p++)
@@ -389,7 +390,7 @@ uint8_t application_mode()
 //http://www.crazyforcode.com/write-code-to-remove-duplicates-in-a-sorted-array/
 	int x,y=0;
 	   // Remove the duplicates ...
-	   for (x = 0; x < 5; x++)
+	   for (x = 0; x < NUM_CHAR; x++)
 	   {
 	     if (arr[x] != arr[y])
 	     {
@@ -400,8 +401,6 @@ uint8_t application_mode()
 
 	   // The new array size..
 	   Size = (y + 1);
-
-
 
 //For count of the unique characters that have been received by the UART device driver
     for(i=0;i<Size;i++)

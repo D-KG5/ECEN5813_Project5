@@ -55,7 +55,7 @@ void System_Init(void)
 {
 
 //	PRINTF("Init of hardware finished.\r\n");
-	Log_string("Init of hardware finished.\r\n", UCUNIT_INIT, LOG_TEST);
+	Log_string("Init of hardware finished.\r\n", UCUNIT_INIT, LOG_TEST, 1);
 }
 
 /* Stub: Shutdown your hardware here */
@@ -64,7 +64,7 @@ void System_Shutdown(void)
 
 	/* asm("\tSTOP"); */
 //	PRINTF("System shutdown.\r\n");
-	Log_string("System shutdown.\r\n", UCUNIT_SHUTDOWN, LOG_TEST);
+	Log_string("System shutdown.\r\n", UCUNIT_SHUTDOWN, LOG_TEST, 1);
 	System_exit(0);
 }
 
