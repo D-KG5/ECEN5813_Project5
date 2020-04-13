@@ -85,9 +85,9 @@ int main(void) {
     // enable peripherals
     LED_init();
 #if UART_POLL
-    //
+    Init_UART0(115200);
 #else// if UART_INT
-    //
+    Init_UART0_(115200);
 #endif
 
 #ifdef TESTING_MODE
@@ -96,9 +96,14 @@ int main(void) {
 #endif
 
 #if ECHO_MODE
-    //
+    while(1){
+    	echofunc();
+    }
+
 #else// if APP_MODE
-    //
+    while(1){
+    	appfunc();
+    }
 #endif
 
     /* Force the counter to be placed into memory. */
@@ -110,7 +115,8 @@ int main(void) {
             tight while() loop */
         __asm volatile ("nop");
         Delay(8000000);
-        Log_string("testing\r\n", MAIN, LOG_STATUS);
+        Send_String_Poll("Testing\r\n");
+//        Log_string("testing\r\n", MAIN, LOG_STATUS);
     }
     return 0 ;
 }

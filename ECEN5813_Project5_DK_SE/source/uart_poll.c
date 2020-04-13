@@ -124,13 +124,13 @@ uint8_t transmit_check(void)
 {
 	if(UART0->C2 & 0x08)
 	{
-		PRINTF("UART ready to transmit\n\r");
+//		PRINTF("UART ready to transmit\n\r");
 		return 1;
 
 	}
 	else
 	{
-		PRINTF("UART not ready to transmit\n\r");
+//		PRINTF("UART not ready to transmit\n\r");
 		return 0;
 	}
 
@@ -143,13 +143,13 @@ uint8_t receive_check(void)
 	//UART0->C2 &=~ UART0_C2_TE_MASK;
 	if(UART0->C2 & 0x04)
 	{
-		PRINTF("UART ready to receive\n\r");
+//		PRINTF("UART ready to receive\n\r");
 		return 1;
 
 	}
 	else
 	{
-		PRINTF("UART not ready to receive\n\r");
+//		PRINTF("UART not ready to receive\n\r");
 		return 0;
 	}
 
