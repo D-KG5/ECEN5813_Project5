@@ -53,8 +53,8 @@
 #ifdef TESTING_MODE
 #include "circ_buf_test.h"
 #endif
-#include "uart_poll.h"
-#include "uart_interrupt.h"
+
+#include "UART.h"
 
 /* TODO: insert other definitions and declarations here. */
 
@@ -73,6 +73,11 @@ int main(void) {
     // enable peripherals
     SysTick_init();
 
+    //enable UART
+    Init_UART0(115200);
+
+
+
     // enable logging
     Log_enable();
 #ifdef TESTING_MODE
@@ -85,7 +90,7 @@ int main(void) {
     // enable peripherals
     LED_init();
 #if UART_POLL
-    Init_UART0(115200);
+
     Send_String_Poll((uint8_t *)"Using Poll\r\n");
 #else// if UART_INT
     Init_UART0_(115200);
