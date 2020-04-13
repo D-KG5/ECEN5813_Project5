@@ -17,8 +17,11 @@
 #include "MKL25Z4.h"
 
 #define UART_OVERSAMPLE_RATE 	(16)
-#define BUS_CLOCK 						(24e6)
-#define SYS_CLOCK							(48e6)
+#define BUS_CLOCK 				(24e6)
+#define SYS_CLOCK				(48e6)
+
+#define Start_Transmitting UART0->C2 |= UART_C2_RIE(1)
+#define Stop_Transmitting  UART0->C2 &= ~UART_C2_TIE_MASK
 
 
 void Init_UART0_(uint32_t baud_rate);

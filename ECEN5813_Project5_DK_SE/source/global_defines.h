@@ -25,10 +25,8 @@
 #endif
 
 #define UART_POLL (1)
-//#define UART_INT (1)
 
 #define ECHO_MODE (1)
-#define APP_MODE (1)
 
 
 // enable/disable logging

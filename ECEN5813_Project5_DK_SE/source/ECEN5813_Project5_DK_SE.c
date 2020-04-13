@@ -86,8 +86,10 @@ int main(void) {
     LED_init();
 #if UART_POLL
     Init_UART0(115200);
+    Send_String_Poll((uint8_t *)"Using Poll\r\n");
 #else// if UART_INT
     Init_UART0_(115200);
+    Send_String((uint8_t *)"Using Interrupt\r\n");
 #endif
 
 #ifdef TESTING_MODE
@@ -97,12 +99,23 @@ int main(void) {
 
 #if ECHO_MODE
     while(1){
+#if UART_POLL
     	echofunc();
+#else
+    	echo_function();
+#endif
     }
-
 #else// if APP_MODE
     while(1){
-    	appfunc();
+#if UART_POLL
+    	if(appfunc()){
+    		break;
+    	}
+#else
+    	if(application_mode()){
+    		break;
+    	}
+#endif
     }
 #endif
 
@@ -115,7 +128,11 @@ int main(void) {
             tight while() loop */
         __asm volatile ("nop");
         Delay(8000000);
-        Send_String_Poll("Testing\r\n");
+#if UART_POLL
+        Send_String_Poll((uint8_t *)"Finished\r\n");
+#else
+        Send_String((uint8_t *)"Finished\r\n");
+#endif
 //        Log_string("testing\r\n", MAIN, LOG_STATUS);
     }
     return 0 ;

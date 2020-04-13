@@ -5,26 +5,21 @@
  *      Author: sagar
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include "board.h"
 #include "peripherals.h"
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "MKL25Z4.h"
 #include "fsl_debug_console.h"
+#include "global_defines.h"
 #include "uart_poll.h"
 
-//in main
-
- //   Init_UART0(115200);
-
- //   echofunc();
- //  appfunc();
-
+static char * report;
 
 //Function for UART hardware initialization including baud rate and serial message format
 void Init_UART0(uint32_t baud_rate) {
 	uint16_t sbr;
-	uint8_t temp;
 
 	// Enable clock gating for UART0 and Port A
 	SIM->SCGC4 |= SIM_SCGC4_UART0_MASK;
@@ -54,15 +49,13 @@ void Init_UART0(uint32_t baud_rate) {
 	// Don't enable loopback mode, use 8 data bit mode, don't use parity
 	UART0->C1 = UART0_C1_LOOPS(0) | UART0_C1_M(0) | UART0_C1_PE(0);
 	// Don't invert transmit data, don't enable interrupts for errors
-	UART0->C3 = UART0_C3_TXINV(0) | UART0_C3_ORIE(0)| UART0_C3_NEIE(0)
-			| UART0_C3_FEIE(0) | UART0_C3_PEIE(0);
+	UART0->C3 = UART0_C3_TXINV(0) | UART0_C3_ORIE(0)| UART0_C3_NEIE(0) | UART0_C3_FEIE(0) | UART0_C3_PEIE(0);
 
 	// Clear error flags
 	UART0->S1 = UART0_S1_OR(1) | UART0_S1_NF(1) | UART0_S1_FE(1) | UART0_S1_PF(1);
 
 	// Try it a different way
-	UART0->S1 |= UART0_S1_OR_MASK | UART0_S1_NF_MASK |
-									UART0_S1_FE_MASK | UART0_S1_PF_MASK;
+	UART0->S1 |= UART0_S1_OR_MASK | UART0_S1_NF_MASK | UART0_S1_FE_MASK | UART0_S1_PF_MASK;
 
 	// Send LSB first, do not invert received data
 	UART0->S2 = UART0_S2_MSBF(0) | UART0_S2_RXINV(0);
@@ -75,10 +68,9 @@ void Init_UART0(uint32_t baud_rate) {
 //	UART0->C2 |= UART_C2_RE_MASK; //enable receive
 //	UART0->C2 |= UART_C2_TE_MASK; //enable transmit
 
-	temp = UART0->D;
+//	temp = UART0->D;
 	UART0->S1 &= ~UART0_S1_RDRF_MASK;
 	// Clear the UART RDRF flag
-//	temp = UART0->D;
 
 }
 
@@ -160,44 +152,31 @@ uint8_t echofunc()
 	char inputchar;
 
 	receive_check();
-
 	inputchar=UART0_Receive_Poll();
+	transmit_check();
+	UART0_Transmit_Poll(inputchar);
 
-
-	 transmit_check();
-
-	 UART0_Transmit_Poll(inputchar);
-
-return 1;
+	return 1;
 
 }
 
 uint8_t appfunc()
 {
 	char inputchar;
+	report = malloc(sizeof(char) * 9);
+	uint32_t masking_state;
 	int arr[10];
-     int i=0;
-     int j=0;
-     uint32_t arr_[128]={0};
+    int i=0;
+    int j=0;
+    uint32_t arr_[128]={0};
     //Receives the five character and triggers to printing
 	while(i<5)
 	{
-
-
-	receive_check();
-
-	inputchar=UART0_Receive_Poll();
-
-	arr[i]=inputchar;
-
-
-
-	arr_[arr[i]]+=1;
-
-
-
-    i++;
-
+		receive_check();
+		inputchar=UART0_Receive_Poll();
+		arr[i]=inputchar;
+		arr_[arr[i]]+=1;
+		i++;
 	}
 
 //Transmit the five characters and prints
@@ -247,8 +226,11 @@ uint8_t appfunc()
 //For count of the unique characters that have been received by the UART device driver
     for(i=0;i<Size;i++)
     {
-
-	printf("\n\r%c:%d\n\r",arr[i] ,arr_[arr[i]]);
+    	masking_state = __get_PRIMASK();
+    	START_CRITICAL();
+    	snprintf(report, 9, "\n\r%c:%d\n\r", arr[i], arr_[arr[i]]);
+    	Send_String_Poll((uint8_t *)report);
+    	END_CRITICAL(masking_state);
     }
 
 
