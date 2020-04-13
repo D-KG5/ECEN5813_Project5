@@ -27,8 +27,6 @@ static char * report;
 uint8_t c, * bp;
 int frr[10];
 
-
-
 //Function for UART hardware initialization as above with addition of interrupt configuration and enable
 void Init_UART0(uint32_t baud_rate) {
 	uint16_t sbr;
@@ -95,10 +93,8 @@ void Init_UART0(uint32_t baud_rate) {
 }
 
 //polling functions
-
 #if USE_UART_INTERRUPTS==0
 //Function to transmit a character assuming transmitter is available
-
 uint8_t Transmit_char(uint8_t data)
 {
 	UART0->D = data;
@@ -182,92 +178,10 @@ uint8_t echofunc()
 	return 1;
 
 }
-
-uint8_t appfunc()
-{
-	char inputchar;
-	report = malloc(sizeof(char) * 9);
-	uint32_t masking_state;
-	int arr[10];
-    int i=0;
-    int j=0;
-    uint32_t arr_[128]={0};
-    //Receives the five character and triggers to printing
-	while(i<5)
-	{
-		receive_check();
-		inputchar=UART0_Receive_Poll();
-		arr[i]=inputchar;
-		arr_[arr[i]]+=1;
-		i++;
-	}
-
-//Transmit the five characters and prints
-	transmit_check();
-
-	   for(j=0;j<i;j++)
-	    {
-
-	    	UART0_Transmit_Poll(arr[j]);
-	    }
-
-//sorting the array in ASCI order
-	int k;
-	int p;
-	char temp;
-    int Size=5;
-	for (k = 0; k < Size; k++)
-	{
-		for (p = k + 1; p < Size; p++)
-		{
-			if(arr[k] > arr[p])
-			{
-				temp = arr[k];
-				arr[k] = arr[p];
-				arr[p] = temp;
-			}
-
-		}
-	}
-//http://www.crazyforcode.com/write-code-to-remove-duplicates-in-a-sorted-array/
-	int x,y=0;
-	   // Remove the duplicates ...
-	   for (x = 0; x < 5; x++)
-	   {
-	     if (arr[x] != arr[y])
-	     {
-	       y++;
-	       arr[y] = arr[x]; // Move it to the front
-	     }
-	   }
-
-	   // The new array size..
-	   Size = (y + 1);
-
-
-
-//For count of the unique characters that have been received by the UART device driver
-    for(i=0;i<Size;i++)
-    {
-    	masking_state = __get_PRIMASK();
-    	START_CRITICAL();
-    	snprintf(report, 9, "\n\r%c:%d\n\r", arr[i], arr_[arr[i]]);
-    	Send_String_Poll((uint8_t *)report);
-    	END_CRITICAL(masking_state);
-    }
-
-
-
-
-return 1;
-}
-
 #endif
 
 #if USE_UART_INTERRUPTS
-
 //interrupt functions
-
 void UART0_IRQHandler(void) {
 	uint8_t ch;
 
@@ -342,9 +256,7 @@ void Receive_String(void)
 	c = remove_item(RxQ);//reads the character recevied
 
 	//for application mode
-
 	// Blocking transmit
-
 	bp = &c; //adds the character to the bp
 
 }
@@ -365,10 +277,12 @@ uint8_t echo_function()
 	printf("You pressed %c\n\r", c);
 	return 1;
 }
+#endif
 
-
+// app mode function for both UART polling or interrupt
 uint8_t application_mode()
 {
+#if USE_UART_INTERRUPTS
 	int count=0;
 	uint32_t frr_[128]={0};
 	report = malloc(sizeof(char) * 9);
@@ -379,10 +293,9 @@ uint8_t application_mode()
 		Receive_String();
 		Send_String(bp);
 		frr[count]= c;
-		frr_[frr[count]]+=1;
+		frr_[frr[count]] += 1;
 
 		count++;
-
 	}
 
 	//sorting the array in ASCI order
@@ -426,13 +339,79 @@ uint8_t application_mode()
     	snprintf(report, 9, "\n\r%c:%d\n\r", frr[count], frr_[frr[count]]);
     	Send_String((uint8_t *)report);
     	END_CRITICAL(masking_state);
-//	printf("\n\r%c:%d\n\r",frr[count] ,frr_[frr[count]]);
     }
     return 1;
-}
+#else
+	char inputchar;
+	report = malloc(sizeof(char) * 9);
+	uint32_t masking_state;
+	int arr[10];
+    int i=0;
+    int j=0;
+    uint32_t arr_[128]={0};
+    //Receives the five character and triggers to printing
+	while(i<5)
+	{
+		receive_check();
+		inputchar=UART0_Receive_Poll();
+		arr[i]=inputchar;
+		arr_[arr[i]]+=1;
+		i++;
+	}
+
+//Transmit the five characters and prints
+	transmit_check();
+
+	   for(j=0;j<i;j++)
+	    {
+
+	    	UART0_Transmit_Poll(arr[j]);
+	    }
+
+//sorting the array in ASCI order
+	int k;
+	int p;
+	char temp;
+    int Size=5;
+	for (k = 0; k < Size; k++)
+	{
+		for (p = k + 1; p < Size; p++)
+		{
+			if(arr[k] > arr[p])
+			{
+				temp = arr[k];
+				arr[k] = arr[p];
+				arr[p] = temp;
+			}
+
+		}
+	}
+//http://www.crazyforcode.com/write-code-to-remove-duplicates-in-a-sorted-array/
+	int x,y=0;
+	   // Remove the duplicates ...
+	   for (x = 0; x < 5; x++)
+	   {
+	     if (arr[x] != arr[y])
+	     {
+	       y++;
+	       arr[y] = arr[x]; // Move it to the front
+	     }
+	   }
+
+	   // The new array size..
+	   Size = (y + 1);
 
 
 
-
-
+//For count of the unique characters that have been received by the UART device driver
+    for(i=0;i<Size;i++)
+    {
+    	masking_state = __get_PRIMASK();
+    	START_CRITICAL();
+    	snprintf(report, 9, "\n\r%c:%d\n\r", arr[i], arr_[arr[i]]);
+    	Send_String_Poll((uint8_t *)report);
+    	END_CRITICAL(masking_state);
+    }
+    return 1;
 #endif
+}

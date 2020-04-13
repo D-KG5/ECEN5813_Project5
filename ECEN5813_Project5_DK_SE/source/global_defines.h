@@ -24,9 +24,9 @@
 #include "uCUnit/uCUnit.h"
 #endif
 
-#define UART_POLL (1)
+#define USE_UART_INTERRUPTS (1) // 0 for polled UART communications, 1 for interrupt-driven
 
-#define ECHO_MODE (1)
+#define ECHO_MODE (1)	// disable for app mode
 
 
 // enable/disable logging

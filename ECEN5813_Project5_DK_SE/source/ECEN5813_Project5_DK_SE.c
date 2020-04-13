@@ -73,11 +73,6 @@ int main(void) {
     // enable peripherals
     SysTick_init();
 
-    //enable UART
-    Init_UART0(115200);
-
-
-
     // enable logging
     Log_enable();
 #ifdef TESTING_MODE
@@ -89,11 +84,12 @@ int main(void) {
 
     // enable peripherals
     LED_init();
-#if UART_POLL
+    // enable UART
+    Init_UART0(115200);
 
+#if USE_UART_INTERRUPTS==0
     Send_String_Poll((uint8_t *)"Using Poll\r\n");
 #else// if UART_INT
-
     Send_String((uint8_t *)"Using Interrupt\r\n");
 #endif
 
@@ -104,7 +100,7 @@ int main(void) {
 
 #if ECHO_MODE
     while(1){
-#if UART_POLL
+#if USE_UART_INTERRUPTS==0
     	echofunc();
 #else
     	echo_function();
@@ -112,15 +108,9 @@ int main(void) {
     }
 #else// if APP_MODE
     while(1){
-#if UART_POLL
-    	if(appfunc()){
-    		break;
-    	}
-#else
     	if(application_mode()){
     		break;
     	}
-#endif
     }
 #endif
 
@@ -133,7 +123,7 @@ int main(void) {
             tight while() loop */
         __asm volatile ("nop");
         Delay(8000000);
-#if UART_POLL
+#if USE_UART_INTERRUPTS==0
         Send_String_Poll((uint8_t *)"Finished\r\n");
 #else
         Send_String((uint8_t *)"Finished\r\n");
