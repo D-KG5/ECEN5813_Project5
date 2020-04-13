@@ -27,10 +27,10 @@ static const char* log_levels[] = {"Status:", "Debug:", "Test:", ""};
 // function name enum and accompanying strings
 func_names_t func_name;
 static const char* func_names[] = {"main:", "POST:", "Log_enable:", "Log_level:", "LED_init:", "LED_off:",
-							"LED_off:", "LED_flash:", "I2C_init:", "Sensor_enable:",
-							"Sensor_disable:", "Read_xyz:", "Slider_init:", "Slider_poll:", "state_event_handler:",
-							"SPI_init", "spi_event_handler", "UCUNIT_WriteString", "UCUNIT_WriteInt", "UCUNIT_Init",
-							"UCUNIT_Shutdown", ""};
+							"LED_off:", "LED_flash:", "echofunc:", "application_mode:",
+							"SysTick_init:", "Init_UART0:", "UART0_Transmit_Poll:", "UART0_Receive_Poll:", "Send_String_Poll:",
+							"receive_check", "transmit_check", "UCUNIT_WriteString", "UCUNIT_WriteInt", "UCUNIT_Init",
+							"UCUNIT_Shutdown","UART0_IRQHandler","Send_String","Receive_String","insert_item","remove_item","destroy_buf","SysTick_enable","SysTick_disable","SysTick_Handler," ""};
 
 static bool enabled = false;
 

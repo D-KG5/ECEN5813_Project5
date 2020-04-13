@@ -136,12 +136,12 @@ uint8_t transmit_check(void)
 {
 	if(UART0->C2 & 0x08)
 	{
-		Log_string("UART ready to transmit\r\n", MAIN, LOG_DEBUG, 1);
+		Log_string("UART ready to transmit\r\n", TRANSMIT_CHECK, LOG_DEBUG, 1);
 		return 1;
 	}
 	else
 	{
-		Log_string("UART not ready to transmit\r\n", MAIN, LOG_DEBUG, 1);
+		Log_string("UART not ready to transmit\r\n", TRANSMIT_CHECK, LOG_DEBUG, 1);
 		return 0;
 	}
 
@@ -154,12 +154,12 @@ uint8_t receive_check(void)
 	//UART0->C2 &=~ UART0_C2_TE_MASK;
 	if(UART0->C2 & 0x04)
 	{
-		Log_string("UART ready to receive\r\n", MAIN, LOG_DEBUG, 1);
+		Log_string("UART ready to receive\r\n", RECEIVE_CHECK, LOG_DEBUG, 1);
 		return 1;
 	}
 	else
 	{
-		Log_string("UART not ready to receive\r\n", MAIN, LOG_DEBUG, 1);
+		Log_string("UART not ready to receive\r\n", RECEIVE_CHECK, LOG_DEBUG, 1);
 		return 0;
 	}
 
@@ -276,7 +276,7 @@ uint8_t echo_function()
 
 	Send_String(bp);
 	snprintf(character, 15, "You pressed %c\n\r", c);
-	Log_string(character, MAIN, LOG_TEST, 0);
+	Log_string(character, ECHOFUNC, LOG_TEST, 0);
 	return 1;
 }
 #endif
