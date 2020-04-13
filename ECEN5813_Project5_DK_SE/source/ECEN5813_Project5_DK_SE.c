@@ -93,7 +93,7 @@ int main(void) {
 
     Send_String_Poll((uint8_t *)"Using Poll\r\n");
 #else// if UART_INT
-    Init_UART0_(115200);
+
     Send_String((uint8_t *)"Using Interrupt\r\n");
 #endif
 
