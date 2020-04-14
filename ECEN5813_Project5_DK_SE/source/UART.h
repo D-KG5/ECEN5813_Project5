@@ -20,10 +20,10 @@
 #define UART_OVERSAMPLE_RATE 	(16)
 #define BUS_CLOCK 						(24e6)
 #define SYS_CLOCK							(48e6)
-#define Start_Transmitting UART0->C2 |= UART_C2_RIE(1)
-#define Stop_Transmitting  UART0->C2 &= ~UART_C2_TIE_MASK
+#define Start_Transmitting UART0->C2 |= UART_C2_RIE(1)  //set the Transmit control register to 1
+#define Stop_Transmitting  UART0->C2 &= ~UART_C2_TIE_MASK //clears the Transmit control register
 
-void Init_UART0(uint32_t baud_rate);
+void Init_UART0(uint32_t baud_rate);//initialize the UART communication
 
 //polling fucntions
 void UART0_Transmit_Poll(uint8_t data);

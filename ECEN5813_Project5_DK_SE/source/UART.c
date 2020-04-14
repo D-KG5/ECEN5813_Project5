@@ -97,31 +97,31 @@ void Init_UART0(uint32_t baud_rate) {
 //Function to transmit a character assuming transmitter is available
 uint8_t Transmit_char(uint8_t data)
 {
-	UART0->D = data;
+	UART0->D = data;//Transmits the data to the PC terminal
 	return 1; // Transmit success
 }
 
 
 //Function waits for the transmitter to be available and then once available transmit a character and return
 void UART0_Transmit_Poll(uint8_t data) {
-		while (!(UART0->S1 & UART0_S1_TDRE_MASK))
+		while (!(UART0->S1 & UART0_S1_TDRE_MASK))//waiting
 			;
-		Transmit_char(data);
+		Transmit_char(data);//transmits the data
 		LED_on(GREEN);
 }
 
 //Function to receive the character assuming receiver has data
 uint8_t Receive_char(void)
 {
-	return UART0->D;
+	return UART0->D;//receive the data from the PC terminal
 }
 
 //Function to wait  for the receiver to receive a new character and then return that character
 uint8_t UART0_Receive_Poll(void) {
-		while (!(UART0->S1 & UART0_S1_RDRF_MASK))
+		while (!(UART0->S1 & UART0_S1_RDRF_MASK))//waits till it receives the data
 			;
 		LED_on(BLUE);
-		return Receive_char();
+		return Receive_char();//returns the received character
 }
 
 void Send_String_Poll(uint8_t * str) {
@@ -134,6 +134,7 @@ void Send_String_Poll(uint8_t * str) {
 //Function to check whether the transmitter is available to accept a new character for transmission
 uint8_t transmit_check(void)
 {
+	//checks the control register of transmit
 	if(UART0->C2 & 0x08)
 	{
 		Log_string("UART ready to transmit\r\n", TRANSMIT_CHECK, LOG_DEBUG, 1);
@@ -152,6 +153,7 @@ uint8_t transmit_check(void)
 uint8_t receive_check(void)
 {
 	//UART0->C2 &=~ UART0_C2_TE_MASK;
+	//checks the control register of receive
 	if(UART0->C2 & 0x04)
 	{
 		Log_string("UART ready to receive\r\n", RECEIVE_CHECK, LOG_DEBUG, 1);
@@ -165,14 +167,15 @@ uint8_t receive_check(void)
 
 }
 
+//An echo function that uses the above functions to echo received characters one at a time back to the PC-based sender
 uint8_t echofunc()
 {
 	char inputchar;
 
 	receive_check();
-	inputchar=UART0_Receive_Poll();
+	inputchar=UART0_Receive_Poll();//Takes in the input character
 	transmit_check();
-	UART0_Transmit_Poll(inputchar);
+	UART0_Transmit_Poll(inputchar);//Transmits the input character
 
 	return 1;
 }
@@ -194,7 +197,7 @@ void UART0_IRQHandler(void) {
 		// received a character
 		ch = UART0->D;
 		if (!is_full(RxQ)) {
-			insert_item(RxQ, ch);
+			insert_item(RxQ, ch);//add the character to the circular buffer
 		} else {
 			// error - queue full.
 			// discard character
@@ -204,7 +207,7 @@ void UART0_IRQHandler(void) {
 			(UART0->S1 & UART0_S1_TDRE_MASK) ) { // tx buffer empty
 		// can send another character
 		if (!is_empty(TxQ)) {
-			UART0->D = remove_item(TxQ);
+			UART0->D = remove_item(TxQ);//Reads and removes the character from the circular buffer
 		} else {
 			// queue is empty so disable transmitter interrupt
 			UART0->C2 &= ~UART0_C2_TIE_MASK;
@@ -290,12 +293,12 @@ uint8_t application_mode()
 	uint32_t frr_[128]={0};
 	report = malloc(sizeof(char) * 9);
 
-	while(count<NUM_CHAR)
+	while(count<NUM_CHAR)//takes the five characters and triggers the transmitting the characters the PC terminal
 	{
 		Receive_String();
 		Send_String(bp);
 		frr[count]= c;
-		frr_[frr[count]] += 1;
+		frr_[frr[count]] += 1;//counts the no. of times the character is repeated
 
 		count++;
 	}
@@ -370,6 +373,7 @@ uint8_t application_mode()
 	    }
 
 //sorting the array in ASCI order
+//inspired by https://en.wikiversity.org/wiki/C_Source_Code/Sorting_array_in_ascending_and_descending_order
 	int k;
 	int p;
 	char temp;
