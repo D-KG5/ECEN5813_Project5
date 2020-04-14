@@ -31,7 +31,7 @@ PES Project 5 for ECEN 5813. By Dhruva Koley and Sagar Eligar
 - The UART serial console contains application and echo mode traffic.
 - The semihost console contains the logging for everything else
 - The while loop at the end of the main function will be entered after application mode has finished and demonstrates logging to the UART serial console as well as the timestamp.
-- Logging strings and integers can be done wither in the semihost console or on the UART serial console depending on `uint8_t console`
+- Logging strings and integers can be done within the semihost console or on the UART serial console depending on `uint8_t console`
 - Test mode can be enabled in global_defines.h
 - The type of UART driver (polled or interrupts) that is used can be toggled in global_defines.h
 - The slider touch state transitions are extremely glitchy. 

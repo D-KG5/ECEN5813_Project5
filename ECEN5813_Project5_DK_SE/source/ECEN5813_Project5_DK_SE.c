@@ -100,6 +100,7 @@ int main(void) {
 #endif
 
 #if ECHO_MODE
+    Log_string("Echo Mode\r\n", MAIN, LOG_STATUS, 0);
     while(1){
 #if USE_UART_INTERRUPTS==0
     	echofunc();
@@ -108,6 +109,7 @@ int main(void) {
 #endif
     }
 #else// if APP_MODE
+    Log_string("Application Mode\r\n", MAIN, LOG_STATUS, 0);
     while(1){
     	if(application_mode()){
     		break;

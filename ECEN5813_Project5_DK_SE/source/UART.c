@@ -228,7 +228,7 @@ uint8_t	Get_Rx_Char(void) {
 void Send_String(uint8_t * str) {
 
 	// enqueue string
-	//printf("UART Ready to transmit\n\r");
+	Log_string("UART ready to transmit\r\n", SEND_STRING, LOG_DEBUG, 1);
 	while (*str != '\0') { // copy characters up to null terminator
 		while (is_full(TxQ))
 			; // wait for space to open up
@@ -249,8 +249,7 @@ void Send_String(uint8_t * str) {
 void Receive_String(void)
 {
 
-//	printf("UART Ready to Receive\n\r");
-//	printf("Ready to receive");
+	Log_string("UART ready to receive\r\n", RECEIVE_STRING, LOG_DEBUG, 1);
 	while ((RxQ->size) == 0)
 		; // wait for character to arrive
 
@@ -271,7 +270,7 @@ uint8_t echo_function()
 
 	if(c == '\0') //if no character received then it fails
 	{
-	//	printf("Receive failed\n\r");
+		Log_string("ERROR: Receive failed\n\r", ECHOFUNC, LOG_DEBUG, 0);
 		Stop_Transmitting; //if failed stop transmitting
 		LED_on(RED);
 		return 0;
