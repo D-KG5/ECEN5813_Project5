@@ -30,7 +30,8 @@ static const char* func_names[] = {"main:", "POST:", "Log_enable:", "Log_level:"
 							"LED_off:", "LED_flash:", "echofunc:", "application_mode:",
 							"SysTick_init:", "Init_UART0:", "UART0_Transmit_Poll:", "UART0_Receive_Poll:", "Send_String_Poll:",
 							"receive_check", "transmit_check", "UCUNIT_WriteString", "UCUNIT_WriteInt", "UCUNIT_Init",
-							"UCUNIT_Shutdown","UART0_IRQHandler","Send_String","Receive_String","insert_item","remove_item","destroy_buf","SysTick_enable","SysTick_disable","SysTick_Handler," ""};
+							"UCUNIT_Shutdown","UART0_IRQHandler","Send_String","Receive_String","insert_item","remove_item",
+							"destroy_buf","SysTick_enable","SysTick_disable","SysTick_Handler," ""};
 
 static bool enabled = false;
 
@@ -59,7 +60,7 @@ void Log_enable(void){
 #if LOGGING
 	// begin printing log messages when called
 	enabled = true;
-	// malloc timestamp string
+	// malloc timestamp and log_str strings
 	timestamp = malloc(sizeof(char) * 11);
 	log_str = malloc(sizeof(char) * 128);
 #endif
@@ -131,7 +132,7 @@ int Log_data(uint8_t * seq, uint8_t len, func_names_t func, log_level_t level){
 	return log_status;
 }
 
-// display a string
+// display a string. uint8_t console determines if it's displayed on the semihost console (1) or in the UART serial console (0)
 int Log_string(char * string, func_names_t func, log_level_t level, uint8_t console){
 	log_status = LOG_FAILED;
 #if LOGGING
@@ -157,7 +158,7 @@ int Log_string(char * string, func_names_t func, log_level_t level, uint8_t cons
 	return log_status;
 }
 
-// display an integer
+// display an integer. uint8_t console determines if it's displayed on the semihost console (1) or in the UART serial console (0)
 int Log_integer(int32_t integer, func_names_t func, log_level_t level, uint8_t console){
 	log_status = LOG_FAILED;
 #if LOGGING
